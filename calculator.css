@@ -18,14 +18,14 @@
     background-color: #fff;
 }
 
-.calculator__inner {
+.calculator__display {
     position: relative;
     width: 100%;
     height: 50px;
     margin-bottom: 10px;
 }
 
-.calculator__answer {
+.calculator__display-inner {
     position: absolute;
     right: 0;
     bottom: 0;
@@ -40,6 +40,7 @@
     display: flex;
     justify-content: space-around;
     align-items: center;
+    flex-wrap: wrap;
 }
 
 .calculator__key {
