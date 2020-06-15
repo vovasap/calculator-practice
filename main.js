@@ -66,14 +66,29 @@ let Calculator = {
 
                 case 'CE':
                     keyElement.addEventListener('click', () => {
+                        if (isNaN(this.properties.value[this.properties.value.length - 1])) {
+                            this.properties.value = this.properties.value.substring(0, this.properties.value.length - 1)
+                        }
 
+                        this._setValueOnDisplay()
+
+                        while (this.properties.value.length > 0 &&
+                            !isNaN(this.properties.value[this.properties.value.length - 1]) ||
+                            this.properties.value[this.properties.value.length - 1] === '.') {
+
+                            this.properties.value = this.properties.value.substring(0, this.properties.value.length - 1)
+                        }
+
+                        this._setValueOnDisplay()
                     })
 
                     break
 
                 case 'DEL':
                     keyElement.addEventListener('click', () => {
+                        this.properties.value = this.properties.value.substring(0, this.properties.value.length - 1)
 
+                        this._setValueOnDisplay()
                     })
 
                     break
