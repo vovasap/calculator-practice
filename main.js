@@ -7,9 +7,7 @@ let Calculator = {
     },
     properties: {
         value: '0',
-        firstOperand: 0,
-        secondOperand: 0,
-        operator: '',
+        calculatedExpression: ['0'],
         isNewOperation: true
     },
 
@@ -56,27 +54,18 @@ let Calculator = {
                 case 'C':
                     keyElement.style.color = '#ff5349'
                     keyElement.addEventListener('click', () => {
-                        this.properties.value = ''
-                        this.properties.firstOperand = '0'
-                        this.properties.secondOperand = ''
-                        this._setValueOnDisplay()
+                        this.properties.calculatedExpression = ['']
+                        this.elements.displayInner.textContent = '0'
                     })
 
                     break
 
                 case 'CE':
                     keyElement.addEventListener('click', () => {
-                        if (isNaN(this.properties.value[this.properties.value.length - 1])) {
-                            this.properties.value = this.properties.value.substring(0, this.properties.value.length - 1)
-                        }
-
-                        this._setValueOnDisplay()
-
-                        while (this.properties.value.length > 0 &&
-                            !isNaN(this.properties.value[this.properties.value.length - 1]) ||
-                            this.properties.value[this.properties.value.length - 1] === '.') {
-
-                            this.properties.value = this.properties.value.substring(0, this.properties.value.length - 1)
+                        if (this.properties.calculatedExpression.length == 1 ) {
+                            this.properties.calculatedExpression[this.properties.calculatedExpression.length - 1] = '0'
+                        } else {
+                            this.properties.calculatedExpression.pop()
                         }
 
                         this._setValueOnDisplay()
@@ -86,8 +75,24 @@ let Calculator = {
 
                 case 'DEL':
                     keyElement.addEventListener('click', () => {
-                        this.properties.value = this.properties.value.substring(0, this.properties.value.length - 1)
+                        if (this.properties.calculatedExpression.length == 1 && 
+                            this.properties.calculatedExpression[this.properties.calculatedExpression.length - 1].length == 1) {
 
+                            this.properties.calculatedExpression[this.properties.calculatedExpression.length - 1] = '0'
+
+                        } else {
+                            if (this.properties.calculatedExpression[this.properties.calculatedExpression.length - 1] == '') {
+
+                                this.properties.calculatedExpression.pop()
+                                this.properties.calculatedExpression[this.properties.calculatedExpression.length - 1] = 
+                                    this.properties.calculatedExpression[this.properties.calculatedExpression.length - 1].toString()
+
+                            } 
+                            this.properties.calculatedExpression[this.properties.calculatedExpression.length - 1] = 
+                                this.properties.calculatedExpression[this.properties.calculatedExpression.length - 1]
+                                .substring(0, this.properties.calculatedExpression[this.properties.calculatedExpression.length - 1].length - 1)
+                        }
+                        
                         this._setValueOnDisplay()
                     })
 
@@ -98,11 +103,12 @@ let Calculator = {
                 case '-':
                 case '+':
                     keyElement.addEventListener('click', () => {
+
                         if (this.properties.isNewOperation) {
                             this.properties.isNewOperation = false
                         }
-                        this.properties.firstOperand = this.properties.value
-                        this.properties.value += key
+
+                        this._addDataInCalculatedExpression(key)
                         this._setValueOnDisplay()
                     })
 
@@ -110,47 +116,31 @@ let Calculator = {
 
                 case '=':
                     keyElement.addEventListener('click', () => {
-                        this.properties.firstOperand = this.properties.firstOperand.toString()
-                        if (!this.properties.isNewOperation) {
-                            this.properties.operator = this.properties.value.substring(this.properties.firstOperand.length, this.properties.firstOperand.length + 1)
-                            this.properties.secondOperand = this.properties.value.substring(this.properties.firstOperand.length + 1, this.properties.value.length) ? 
-                                                        this.properties.value.substring(this.properties.firstOperand.length + 1, this.properties.value.length) :
-                                                        this.properties.firstOperand
-                        }
-                        switch(this.properties.operator) {
-                            case '+':
-                                this.properties.value = (new Decimal(parseFloat(this.properties.firstOperand))).plus(parseFloat(this.properties.secondOperand))
-                                this._setValueOnDisplay()
+                        this.properties.calculatedExpression[this.properties.calculatedExpression.length - 1] = 
+                            parseFloat(this.properties.calculatedExpression[this.properties.calculatedExpression.length - 1])
 
-                                break
-
-                            case '-':
-                                this.properties.value = (new Decimal(parseFloat(this.properties.firstOperand))).minus(parseFloat(this.properties.secondOperand))
-                                this._setValueOnDisplay()
-
-                                break
-
-                            case '*':
-                                this.properties.value = (new Decimal(parseFloat(this.properties.firstOperand))).mul(parseFloat(this.properties.secondOperand))
-                                this._setValueOnDisplay()
-
-                                break
-
-                            case '/':
-                                this.properties.value = (new Decimal(parseFloat(this.properties.firstOperand))).div(parseFloat(this.properties.secondOperand))
-                                this._setValueOnDisplay()
-
-                                break
-                        }
-                        this.properties.firstOperand = this.properties.value
+                        this.properties.calculatedExpression = [this._getResult(this.properties.calculatedExpression)]
                         this.properties.isNewOperation = true
+                        this._setValueOnDisplay()
                     })
 
                     break
 
                 case '+/-':
                     keyElement.addEventListener('click', () => {
+                        if (this.properties.calculatedExpression.length % 2 === 1 ) {
+                            if (this.properties.calculatedExpression[this.properties.calculatedExpression.length - 1][0] != '-') {
 
+                                this.properties.calculatedExpression[this.properties.calculatedExpression.length - 1] =
+                                    `-${this.properties.calculatedExpression[this.properties.calculatedExpression.length - 1]}`
+
+                            } else {
+
+                                this.properties.calculatedExpression[this.properties.calculatedExpression.length - 1] =
+                                    this.properties.calculatedExpression[this.properties.calculatedExpression.length - 1].slice(1)
+                            }
+                        }
+                        this._setValueOnDisplay()
                     })
 
                     break
@@ -159,9 +149,11 @@ let Calculator = {
                     keyElement.addEventListener('click', () => {
                         if (this.properties.isNewOperation) {
                             this.properties.value = ''
+                            this.properties.calculatedExpression = ['']
                             this.properties.isNewOperation = false
                         }
-                        this.properties.value += key
+
+                        this._addDataInCalculatedExpression(key)
                         this._setValueOnDisplay()
                     })
 
@@ -176,7 +168,80 @@ let Calculator = {
     },    
 
     _setValueOnDisplay() {
-        this.elements.displayInner.textContent = this.properties.value
+        this.elements.displayInner.textContent = this.properties.calculatedExpression.join('')
+    },
+
+    _addDataInCalculatedExpression(key) {
+        let CalcExp = this.properties.calculatedExpression
+
+        if (key == '.') {
+            if (!/\./.test(CalcExp[CalcExp.length - 1])) {
+                if (!isNaN(CalcExp[CalcExp.length - 1])) {
+                    if (CalcExp[CalcExp.length - 1] === '') {
+                        CalcExp[CalcExp.length - 1] = '0.'
+                    } else {
+                        CalcExp[CalcExp.length - 1] += key
+                    }
+                } else {
+                    CalcExp[CalcExp.length] = '0.'
+                }
+            }
+        } else if (!isNaN(key)) {
+            if (!isNaN(CalcExp[CalcExp.length - 1])) {
+                if (key == 0) {
+                    if (CalcExp.length > 0) {
+                        if (CalcExp[CalcExp.length - 1] != 0) {
+                            CalcExp[CalcExp.length - 1] += '0'
+                        } else {
+                            CalcExp[CalcExp.length - 1] = '0'
+                        }
+                    } 
+                    else {
+                        CalcExp[CalcExp.length - 1] = '0'
+                        console.log('and ere');
+
+                    }
+                } else {
+                    CalcExp[CalcExp.length - 1] += key
+                }
+            } else {
+                CalcExp[CalcExp.length] = key
+            }
+            
+        } else {
+            if (!isNaN(CalcExp[CalcExp.length - 1])) {
+                CalcExp[CalcExp.length - 1] = parseFloat(CalcExp[CalcExp.length - 1])
+                CalcExp[CalcExp.length] = key
+            } else {
+                CalcExp[CalcExp.length - 1] = key
+            }
+        }
+    },
+
+    _getResult(caulculatedExpression) {
+        let sum = caulculatedExpression[0]
+        for (let i = 0; i < caulculatedExpression.length; i++) {
+            if (isNaN(caulculatedExpression[i])) {
+                switch(caulculatedExpression[i]) {
+                        case '+':
+                            sum = new Decimal(sum).plus(caulculatedExpression[i + 1])
+                            break
+
+                        case '-':
+                            sum = new Decimal(sum).minus(caulculatedExpression[i + 1])
+                            break
+
+                        case '*':
+                            sum = new Decimal(sum).mul(caulculatedExpression[i + 1])
+                            break
+
+                        case '/':
+                            sum = new Decimal(sum).div(caulculatedExpression[i + 1])
+                            break
+                }
+            }
+        }
+        return sum.toString()
     }
 }
 
