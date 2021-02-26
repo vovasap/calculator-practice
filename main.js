@@ -198,8 +198,6 @@ let Calculator = {
                     } 
                     else {
                         CalcExp[CalcExp.length - 1] = '0'
-                        console.log('and ere');
-
                     }
                 } else {
                     CalcExp[CalcExp.length - 1] += key
