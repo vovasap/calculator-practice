@@ -62,7 +62,7 @@ let Calculator = {
 
                 case 'CE':
                     keyElement.addEventListener('click', () => {
-                        if (this.properties.calculatedExpression.length == 1 ) {
+                        if (this.properties.calculatedExpression.length === 1 ) {
                             this.properties.calculatedExpression[this.properties.calculatedExpression.length - 1] = '0'
                         } else {
                             this.properties.calculatedExpression.pop()
@@ -75,13 +75,13 @@ let Calculator = {
 
                 case 'DEL':
                     keyElement.addEventListener('click', () => {
-                        if (this.properties.calculatedExpression.length == 1 && 
-                            this.properties.calculatedExpression[this.properties.calculatedExpression.length - 1].length == 1) {
+                        if (this.properties.calculatedExpression.length === 1 &&
+                            this.properties.calculatedExpression[this.properties.calculatedExpression.length - 1].length === 1) {
 
                             this.properties.calculatedExpression[this.properties.calculatedExpression.length - 1] = '0'
 
                         } else {
-                            if (this.properties.calculatedExpression[this.properties.calculatedExpression.length - 1] == '') {
+                            if (this.properties.calculatedExpression[this.properties.calculatedExpression.length - 1] === '') {
 
                                 this.properties.calculatedExpression.pop()
                                 this.properties.calculatedExpression[this.properties.calculatedExpression.length - 1] = 
@@ -129,7 +129,7 @@ let Calculator = {
                 case '+/-':
                     keyElement.addEventListener('click', () => {
                         if (this.properties.calculatedExpression.length % 2 === 1 ) {
-                            if (this.properties.calculatedExpression[this.properties.calculatedExpression.length - 1][0] != '-') {
+                            if (this.properties.calculatedExpression[this.properties.calculatedExpression.length - 1][0] !== '-') {
 
                                 this.properties.calculatedExpression[this.properties.calculatedExpression.length - 1] =
                                     `-${this.properties.calculatedExpression[this.properties.calculatedExpression.length - 1]}`
@@ -174,7 +174,7 @@ let Calculator = {
     _addDataInCalculatedExpression(key) {
         let CalcExp = this.properties.calculatedExpression
 
-        if (key == '.') {
+        if (key === '.') {
             if (!/\./.test(CalcExp[CalcExp.length - 1])) {
                 if (!isNaN(CalcExp[CalcExp.length - 1])) {
                     if (CalcExp[CalcExp.length - 1] === '') {
@@ -188,9 +188,9 @@ let Calculator = {
             }
         } else if (!isNaN(key)) {
             if (!isNaN(CalcExp[CalcExp.length - 1])) {
-                if (key == 0) {
+                if (key === 0) {
                     if (CalcExp.length > 0) {
-                        if (CalcExp[CalcExp.length - 1] != 0) {
+                        if (CalcExp[CalcExp.length - 1] !== 0) {
                             CalcExp[CalcExp.length - 1] += '0'
                         } else {
                             CalcExp[CalcExp.length - 1] = '0'
